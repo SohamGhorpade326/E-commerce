@@ -10,7 +10,7 @@ const initialState = {
 
 export const listProducts = createAsyncThunk('products/list', async (_, { rejectWithValue }) => {
   try {
-    const { data } = await axios.get('http://localhost:5000/api/products');
+    const { data } = await axios.get('/api/products');
     return data;
   } catch (error) {
     return rejectWithValue(error.response.data.message || error.message);
@@ -19,7 +19,7 @@ export const listProducts = createAsyncThunk('products/list', async (_, { reject
 
 export const listProductDetails = createAsyncThunk('products/details', async (id, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+      const { data } = await axios.get(`/api/products/${id}`);
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || error.message);

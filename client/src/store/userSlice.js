@@ -17,7 +17,7 @@ const initialState = {
 export const login = createAsyncThunk('user/login', async ({ email, password }, { rejectWithValue }) => {
   try {
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const { data } = await axios.post('http://localhost:5000/api/users/login', { email, password }, config);
+    const { data } = await axios.post('/api/users/login', { email, password }, config);
     localStorage.setItem('userInfo', JSON.stringify(data));
     return data;
   } catch (error) {
@@ -29,7 +29,7 @@ export const login = createAsyncThunk('user/login', async ({ email, password }, 
 export const register = createAsyncThunk('user/register', async ({ name, email, password }, { rejectWithValue }) => {
     try {
       const config = { headers: { 'Content-Type': 'application/json' } };
-      const { data } = await axios.post('http://localhost:5000/api/users', { name, email, password }, config);
+      const { data } = await axios.post('/api/users', { name, email, password }, config);
       localStorage.setItem('userInfo', JSON.stringify(data));
       return data;
     } catch (error) {
@@ -47,7 +47,7 @@ export const getUserDetails = createAsyncThunk('user/getDetails', async (_, { ge
                 Authorization: `Bearer ${userInfo.token}`,
             },
         };
-        const { data } = await axios.get('http://localhost:5000/api/users/profile', config);
+        const { data } = await axios.get('/api/users/profile', config);
         return data;
     } catch (error) {
         return rejectWithValue(error.response.data.message || error.message);
@@ -64,7 +64,7 @@ export const updateUserProfile = createAsyncThunk('user/updateProfile', async (u
                 Authorization: `Bearer ${userInfo.token}`,
             },
         };
-        const { data } = await axios.put('http://localhost:5000/api/users/profile', userData, config);
+        const { data } = await axios.put('/api/users/profile', userData, config);
         localStorage.setItem('userInfo', JSON.stringify(data));
         return data;
     } catch (error) {

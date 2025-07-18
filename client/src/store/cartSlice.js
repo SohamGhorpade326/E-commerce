@@ -16,7 +16,7 @@ const initialState = {
 };
 
 export const addToCart = createAsyncThunk('cart/addItem', async ({ id, qty }) => {
-  const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+  const { data } = await axios.get(`/api/products/${id}`);
   return {
     product: data._id,
     name: data.name,
