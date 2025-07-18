@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 const cartItemsFromStorage = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : [];
@@ -16,7 +18,7 @@ const initialState = {
 };
 
 export const addToCart = createAsyncThunk('cart/addItem', async ({ id, qty }) => {
-  const { data } = await axios.get(`/api/products/${id}`);
+  const { data } = await axios.get(`${API_URL}/api/products/${id}`);
   return {
     product: data._id,
     name: data.name,
@@ -27,6 +29,7 @@ export const addToCart = createAsyncThunk('cart/addItem', async ({ id, qty }) =>
   };
 });
 
+// ... (rest of the cartSlice file is the same)
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -63,4 +66,3 @@ const cartSlice = createSlice({
 
 export const { removeFromCart, saveShippingAddress, savePaymentMethod } = cartSlice.actions;
 export default cartSlice.reducer;
-

@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 const initialState = {
   products: [],
   product: {},
@@ -10,7 +12,7 @@ const initialState = {
 
 export const listProducts = createAsyncThunk('products/list', async (_, { rejectWithValue }) => {
   try {
-    const { data } = await axios.get('/api/products');
+    const { data } = await axios.get(`${API_URL}/api/products`);
     return data;
   } catch (error) {
     return rejectWithValue(error.response.data.message || error.message);
@@ -19,20 +21,20 @@ export const listProducts = createAsyncThunk('products/list', async (_, { reject
 
 export const listProductDetails = createAsyncThunk('products/details', async (id, { rejectWithValue }) => {
     try {
-      const { data } = await axios.get(`/api/products/${id}`);
+      const { data } = await axios.get(`${API_URL}/api/products/${id}`);
       return data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || error.message);
     }
   });
 
+// ... (rest of the productsSlice file is the same)
 const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // List all products
       .addCase(listProducts.pending, (state) => {
         state.loading = true;
       })
@@ -44,7 +46,6 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Get product details
       .addCase(listProductDetails.pending, (state) => {
         state.loading = true;
       })

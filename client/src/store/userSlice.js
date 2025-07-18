@@ -1,23 +1,27 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+// Get the base URL from the environment variable for production,
+// default to an empty string for local development (which will use the proxy).
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 const userInfoFromStorage = localStorage.getItem('userInfo')
   ? JSON.parse(localStorage.getItem('userInfo'))
   : null;
 
 const initialState = {
   userInfo: userInfoFromStorage,
-  userDetails: null, // <-- ADDED for profile page
+  userDetails: null,
   loading: false,
   error: null,
-  success: false, // <-- ADDED for update success message
+  success: false,
 };
 
 // LOGIN
 export const login = createAsyncThunk('user/login', async ({ email, password }, { rejectWithValue }) => {
   try {
     const config = { headers: { 'Content-Type': 'application/json' } };
-    const { data } = await axios.post('/api/users/login', { email, password }, config);
+    const { data } = await axios.post(`${API_URL}/api/users/login`, { email, password }, config);
     localStorage.setItem('userInfo', JSON.stringify(data));
     return data;
   } catch (error) {
@@ -29,7 +33,7 @@ export const login = createAsyncThunk('user/login', async ({ email, password }, 
 export const register = createAsyncThunk('user/register', async ({ name, email, password }, { rejectWithValue }) => {
     try {
       const config = { headers: { 'Content-Type': 'application/json' } };
-      const { data } = await axios.post('/api/users', { name, email, password }, config);
+      const { data } = await axios.post(`${API_URL}/api/users`, { name, email, password }, config);
       localStorage.setItem('userInfo', JSON.stringify(data));
       return data;
     } catch (error) {
@@ -47,7 +51,7 @@ export const getUserDetails = createAsyncThunk('user/getDetails', async (_, { ge
                 Authorization: `Bearer ${userInfo.token}`,
             },
         };
-        const { data } = await axios.get('/api/users/profile', config);
+        const { data } = await axios.get(`${API_URL}/api/users/profile`, config);
         return data;
     } catch (error) {
         return rejectWithValue(error.response.data.message || error.message);
@@ -64,7 +68,7 @@ export const updateUserProfile = createAsyncThunk('user/updateProfile', async (u
                 Authorization: `Bearer ${userInfo.token}`,
             },
         };
-        const { data } = await axios.put('/api/users/profile', userData, config);
+        const { data } = await axios.put(`${API_URL}/api/users/profile`, userData, config);
         localStorage.setItem('userInfo', JSON.stringify(data));
         return data;
     } catch (error) {
@@ -72,7 +76,7 @@ export const updateUserProfile = createAsyncThunk('user/updateProfile', async (u
     }
 });
 
-
+// ... (rest of the userSlice file is the same)
 const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -90,7 +94,6 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login
       .addCase(login.pending, (state) => { state.loading = true; })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
@@ -101,7 +104,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Register
       .addCase(register.pending, (state) => { state.loading = true; })
       .addCase(register.fulfilled, (state, action) => {
         state.loading = false;
@@ -112,7 +114,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Get User Details
       .addCase(getUserDetails.pending, (state) => { state.loading = true; })
       .addCase(getUserDetails.fulfilled, (state, action) => {
         state.loading = false;
@@ -122,7 +123,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      // Update User Profile
       .addCase(updateUserProfile.pending, (state) => { state.loading = true; })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
